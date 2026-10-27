@@ -172,6 +172,15 @@ else()
 	set(COMMENT_PINNED_DEPS "# ")
 endif()
 
+# Cargo always built both crate types, so BUILD_SHARED_LIBS only affected
+# which imported target zenohc::lib aliased. For static-only consumers
+# (notably Android) the cdylib link is unwanted and often impossible.
+if(BUILD_SHARED_LIBS)
+	set(CARGO_CRATE_TYPE "\"cdylib\", \"staticlib\"")
+else()
+	set(CARGO_CRATE_TYPE "\"staticlib\"")
+endif()
+
 set(cargo_lib_name_debug zenohc)
 set(cargo_lib_name_release zenohc)
 if(cargo_toml_dir_debug STREQUAL cargo_toml_dir_release)
@@ -244,9 +253,11 @@ else() #UNIX
 	set_lib(staticlibsd staticlibd libzenohc.a)
 endif()
 
-list(APPEND libsr ${dylibsr})
+if(BUILD_SHARED_LIBS)
+	list(APPEND libsr ${dylibsr})
+	list(APPEND libsd ${dylibsd})
+endif()
 list(APPEND libsr ${staticlibsr})
-list(APPEND libsd ${dylibsd})
 list(APPEND libsd ${staticlibsd})
 list(TRANSFORM libsr PREPEND "${cargo_binary_dir_release}/")
 list(TRANSFORM libsd PREPEND "${cargo_binary_dir_debug}/")

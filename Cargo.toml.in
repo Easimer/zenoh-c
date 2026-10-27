@@ -108,7 +108,7 @@ build-print = "0.1.1" # Bumping to 1.x.x will cause 1.75 check fails
 [lib]
 path = "@CARGO_PROJECT_DIR@src/lib.rs"
 name = "@CARGO_LIB_NAME@"
-crate-type = ["cdylib", "staticlib"]
+crate-type = [@CARGO_CRATE_TYPE@]
 doctest = false
 
 [package.metadata.deb.variants.libzenohc]
